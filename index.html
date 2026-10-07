@@ -58,8 +58,11 @@
 
             <!-- 2. 車位類型（平面 vs 機械） -->
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-1.5 flex items-center">
-                    <i class="fa-solid fa-square-parking text-blue-500 mr-1.5"></i> 車位型態
+                <label class="block text-sm font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <i class="fa-solid fa-square-parking text-blue-500 mr-1.5"></i> 車位型態
+                    </span>
+                    <span id="mech-hint" class="text-xs text-amber-600 font-medium hidden">此社區無機械車位</span>
                 </label>
                 <div class="grid grid-cols-2 gap-2.5">
                     <button type="button" id="btn-plane" onclick="setParkingType('plane')" class="flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition shadow-sm bg-blue-50 border-blue-500 text-blue-700">
@@ -174,21 +177,86 @@
 
     <!-- 邏輯腳本 -->
     <script>
-        // 大樓社區車位資料庫（完整保留）
+        // 大樓社區車位資料庫：僅「聯上康橋」具備機械車位（3.18坪）
         const buildingsData = [
-            { name: "聯上康橋", types: [{ label: "平面車位", area: 8.36 }] },
-            { name: "良勳夢公園 / 年年如意66夢公園", types: [{ label: "平面車位", area: 9.15 }] },
-            { name: "永龍V&A", types: [{ label: "平面車位", area: 7.35 }, { label: "大平面", area: 8.55 }] },
-            { name: "永龍V&A2", types: [{ label: "平面車位", area: 7.74 }, { label: "子母車位", area: 12.34 }] },
-            { name: "明水森林", types: [{ label: "平面車位", area: 10.8 }, { label: "子母車位", area: 16.2 }] },
-            { name: "仁發總圖匯", types: [{ label: "平面車位", area: 6.07 }, { label: "大平面", area: 6.95 }] },
-            { name: "三發匯世界", types: [{ label: "平面車位", area: 5.82 }, { label: "小平面", area: 5.15 }] },
-            { name: "綠海都心", types: [{ label: "平面車位", area: 10.41 }] },
-            { name: "東橋真愛", types: [{ label: "平面車位", area: 6.77 }, { label: "小平面", area: 6.2 }] },
-            { name: "水舞紀", types: [{ label: "平面車位", area: 7.94 }] },
-            { name: "仁發大都匯", types: [{ label: "平面車位", area: 6.66 }, { label: "小平面", area: 6.04 }] },
-            { name: "三發橋", types: [{ label: "平面車位", area: 8.33 }] },
-            { name: "其他 / 自訂大樓", types: [{ label: "自訂規格", area: 8.0 }] }
+            { 
+                name: "聯上康橋", 
+                hasMechanical: true,
+                planeTypes: [{ label: "平面車位", area: 8.36 }],
+                mechanicalTypes: [{ label: "機械車位", area: 3.18 }]
+            },
+            { 
+                name: "良勳夢公園 / 年年如意66夢公園", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 9.15 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "永龍V&A", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 7.35 }, { label: "大平面", area: 8.55 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "永龍V&A2", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 7.74 }, { label: "子母車位", area: 12.34 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "明水森林", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 10.8 }, { label: "子母車位", area: 16.2 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "仁發總圖匯", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 6.07 }, { label: "大平面", area: 6.95 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "三發匯世界", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 5.82 }, { label: "小平面", area: 5.15 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "綠海都心", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 10.41 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "東橋真愛", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 6.77 }, { label: "小平面", area: 6.2 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "水舞紀", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 7.94 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "仁發大都匯", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 6.66 }, { label: "小平面", area: 6.04 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "三發橋", 
+                hasMechanical: false,
+                planeTypes: [{ label: "平面車位", area: 8.33 }],
+                mechanicalTypes: []
+            },
+            { 
+                name: "其他 / 自訂大樓", 
+                hasMechanical: false,
+                planeTypes: [{ label: "自訂規格", area: 8.0 }],
+                mechanicalTypes: []
+            }
         ];
 
         let currentParkingType = 'plane'; // 'plane' or 'mechanical'
@@ -207,7 +275,6 @@
         // 初始化
         window.addEventListener('DOMContentLoaded', () => {
             initBuildingSelect();
-            setParkingType('plane');
             onBuildingChange(0);
         });
 
@@ -227,20 +294,55 @@
             });
         }
 
-        // 大樓變更時更新子規格按鈕與預設坪數
+        // 大樓變更時更新狀態
         function onBuildingChange(index) {
             currentBuilding = buildingsData[index];
             currentSelectedSubIndex = 0;
+
+            const btnMech = document.getElementById('btn-mechanical');
+            const hintMech = document.getElementById('mech-hint');
+
+            // 檢查是否具備機械車位
+            if (!currentBuilding.hasMechanical) {
+                // 若當前在機械車位，強迫切換回平面
+                if (currentParkingType === 'mechanical') {
+                    currentParkingType = 'plane';
+                }
+                // 將機械車位按鈕反灰並停用
+                btnMech.disabled = true;
+                btnMech.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60";
+                if (hintMech) hintMech.classList.remove('hidden');
+            } else {
+                // 有機械車位（聯上康橋）啟用按鈕
+                btnMech.disabled = false;
+                if (hintMech) hintMech.classList.add('hidden');
+            }
+
+            // 更新按鈕樣式與車位金額、坪數
+            updateParkingTypeButtons();
             renderSubParkingButtons();
-            applyParkingArea(currentBuilding.types[0].area);
+            
+            const activeList = getActiveParkingList();
+            if (activeList.length > 0) {
+                applyParkingArea(activeList[0].area);
+            }
         }
 
-        // 渲染車位規格子按鈕（如：大平面、小平面、子母）
+        // 獲取目前模式下的車位規格清單
+        function getActiveParkingList() {
+            if (currentParkingType === 'mechanical' && currentBuilding.hasMechanical) {
+                return currentBuilding.mechanicalTypes;
+            }
+            return currentBuilding.planeTypes;
+        }
+
+        // 渲染車位規格子按鈕（如：大平面、小平面、子母、機械）
         function renderSubParkingButtons() {
             const container = document.getElementById('sub-parking-buttons');
             container.innerHTML = '';
 
-            currentBuilding.types.forEach((item, idx) => {
+            const list = getActiveParkingList();
+            list.forEach((item, idx) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = idx === currentSelectedSubIndex 
@@ -264,21 +366,44 @@
 
         // 切換平面或機械車位 (平面 150萬 / 機械 100萬)
         function setParkingType(type) {
+            if (type === 'mechanical' && !currentBuilding.hasMechanical) {
+                return; // 不支援機械車位時不處理
+            }
+
             currentParkingType = type;
+            currentSelectedSubIndex = 0;
+
+            updateParkingTypeButtons();
+            renderSubParkingButtons();
+
+            const activeList = getActiveParkingList();
+            if (activeList.length > 0) {
+                applyParkingArea(activeList[0].area);
+            } else {
+                calculate();
+            }
+        }
+
+        // 更新平面與機械車位切換按鈕的樣式與價格帶入
+        function updateParkingTypeButtons() {
             const btnPlane = document.getElementById('btn-plane');
             const btnMech = document.getElementById('btn-mechanical');
             const priceInput = document.getElementById('parking-price');
 
-            if (type === 'plane') {
+            if (currentParkingType === 'plane') {
                 btnPlane.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition shadow-sm bg-blue-50 border-blue-500 text-blue-700";
-                btnMech.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+                if (!currentBuilding.hasMechanical) {
+                    btnMech.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60";
+                } else {
+                    btnMech.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+                }
                 priceInput.value = 150;
             } else {
+                // 機械車位選取中
                 btnMech.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition shadow-sm bg-blue-50 border-blue-500 text-blue-700";
                 btnPlane.className = "flex items-center justify-center py-2.5 px-3 rounded-xl border-2 font-bold text-sm transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
                 priceInput.value = 100;
             }
-            calculate();
         }
 
         // 核心計算
@@ -326,7 +451,8 @@
             const parkingPrice = document.getElementById('parking-price').value || '0';
             const parkingArea = document.getElementById('parking-area').value || '0';
             const pType = currentParkingType === 'plane' ? '平面車位' : '機械車位';
-            const subLabel = currentBuilding.types[currentSelectedSubIndex]?.label || '';
+            const activeList = getActiveParkingList();
+            const subLabel = activeList[currentSelectedSubIndex]?.label || '';
             const unitPrice = document.getElementById('unit-price').textContent;
             const netPrice = document.getElementById('net-price').textContent;
             const netArea = document.getElementById('net-area').textContent;
